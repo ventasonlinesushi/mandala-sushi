@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """Receptor de pedidos en línea.
-
+ 
 Modos:
-    python main.py --marca sakura                 # vigila Supabase (producción)
-    python main.py --marca sakura --prueba pedido.txt   # procesa un mensaje de prueba e imprime
+    python main.py --marca mandala                 # vigila Supabase (producción)
+    python main.py --marca mandala --prueba pedido.txt   # procesa un mensaje de prueba e imprime
     python main.py --probar-impresora "YICHIP POS-58"   # ticket de prueba
     python main.py --lista-impresoras
     python main.py --recientes
@@ -68,7 +68,7 @@ def modo_prueba(cfg, ruta_mensaje):
 
 def main():
     ap = argparse.ArgumentParser(description="Receptor de pedidos en línea")
-    ap.add_argument("--marca", default="sakura", choices=["sakura", "mandala"])
+    ap.add_argument("--marca", default="mandala", choices=["sakura", "mandala"])
     ap.add_argument("--config", default=None)
     ap.add_argument("--prueba", default=None, metavar="ARCHIVO")
     ap.add_argument("--probar-impresora", default=None, metavar="IMPRESORA")

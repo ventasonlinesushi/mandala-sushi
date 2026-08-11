@@ -40,9 +40,8 @@ for /f "tokens=2 delims=:" %%a in ('ipconfig ^| findstr /c:"IPv4" ^| findstr "19
 set IP=%IP: =%
 if "%IP%"=="" set IP=192.168.1.194
 
-REM 5. Elegir puerto
+REM 5. Puerto fijo
 set PUERTO=3000
-if exist "sakura-card.png" set PUERTO=3001
 
 cls
 echo.
@@ -67,8 +66,7 @@ echo.
 REM 6. Iniciar servidores
 start "Web Server" cmd /c "python -m http.server %PUERTO%"
 start "Print Server" cmd /c "cd /d %~dp0receptor && python print_server.py"
-for /f "tokens=*" %%m in ('python -c "import json; print(json.load(open('receptor/config.json','r',encoding='utf-8')).get('marcas',{}).get(list(json.load(open('receptor/config.json','r',encoding='utf-8')).get('marcas',{}).keys()[0],{}).get('empresa',''))" 2^>nul') do set MARCA=%%m
-if exist "sakura-card.png" (start "Receiver" cmd /c "cd /d %~dp0receptor && python ordereceiver.py --marca sakura") else (start "Receiver" cmd /c "cd /d %~dp0receptor && python ordereceiver.py --marca mandala")
+start "Receiver" cmd /c "cd /d %~dp0receptor && python ordereceiver.py --marca mandala"
 echo.
 echo   Servidores activos. Presiona para detener...
 pause >nul
