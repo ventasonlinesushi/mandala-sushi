@@ -50,7 +50,7 @@ function apiGet(path){
 function apiPatch(id,data){
   return new Promise(function(resolve,reject){
     var xhr=new XMLHttpRequest();
-    xhr.open("PATCH",API+"?id=eq."+id,true);
+    xhr.open("PATCH",API+"?id=eq."+id+"&marca=eq."+(BRAND.marca||"mandala"),true);
     xhr.setRequestHeader("Content-Type","application/json");
     xhr.setRequestHeader("Prefer","return=minimal");
     xhr.setRequestHeader("apikey",SUPABASE_KEY);
@@ -78,7 +78,7 @@ function apiPost(data){
   });
 }
 function fetchOrders(){
-  var url = "https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?select=*&marca=eq." + (BRAND.marca||"sakura") + "&order=created_at.desc&limit=200";
+  var url = "https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?select=*&marca=eq." + (BRAND.marca||"mandala") + "&order=created_at.desc&limit=200";
   return new Promise(function(resolve,reject){
     var xhr=new XMLHttpRequest();
     xhr.open("GET",url,true);
@@ -94,7 +94,7 @@ function fetchOrders(){
 function patchOrder(id,data){
   return new Promise(function(resolve,reject){
     var xhr=new XMLHttpRequest();
-    xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?id=eq."+id,true);
+    xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?id=eq."+id+"&marca=eq."+(BRAND.marca||"mandala"),true);
     xhr.setRequestHeader("Content-Type","application/json");
     xhr.setRequestHeader("Prefer","return=minimal");
     xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
@@ -698,7 +698,7 @@ function renderCierre(){
   // Recalcular ventas y luego mostrar el corte
   var xhr = new XMLHttpRequest();
   var desde = t.abierto_en;
-  xhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?select=payment,total,created_at,notes&marca=eq."+(BRAND.marca||"sakura")+"&status=eq.cobrado&order=created_at.desc&limit=1000",true);
+  xhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?select=payment,total,created_at,notes&marca=eq."+(BRAND.marca||"mandala")+"&status=eq.cobrado&order=created_at.desc&limit=1000",true);
   xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
   xhr.setRequestHeader("Authorization","Bearer sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
   xhr.timeout=8000;
@@ -809,7 +809,7 @@ function confirmarCierreCiego(){
   var raw = localStorage.getItem(SESSION);
   var user = raw ? JSON.parse(raw) : {username:"?"};
   var xhr = new XMLHttpRequest();
-  xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?abierto_en=eq."+encodeURIComponent(t.abierto_en),true);
+  xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?abierto_en=eq."+encodeURIComponent(t.abierto_en)+"&marca=eq."+(BRAND.marca||"mandala"),true);
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.setRequestHeader("Prefer","return=minimal");
   xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
@@ -856,7 +856,7 @@ window.turnoCalcDiff = function(){
 function checkTurno(){
   return new Promise(function(resolve){
     var xhr = new XMLHttpRequest();
-    xhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?marca=eq."+(BRAND.marca||"sakura")+"&estado=eq.abierto&select=*&order=abierto_en.desc&limit=1",true);
+    xhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?marca=eq."+(BRAND.marca||"mandala")+"&estado=eq.abierto&select=*&order=abierto_en.desc&limit=1",true);
     xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
     xhr.setRequestHeader("Authorization","Bearer sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
     xhr.timeout=8000;
@@ -882,7 +882,7 @@ function calcularVentas(done){
   if(!state.turno){if(done)done();return;}
   var desde = state.turno.abierto_en;
   var xhr = new XMLHttpRequest();
-  xhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?select=payment,total,created_at,notes&marca=eq."+(BRAND.marca||"sakura")+"&status=eq.cobrado&order=created_at.desc&limit=1000",true);
+  xhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/orders?select=payment,total,created_at,notes&marca=eq."+(BRAND.marca||"mandala")+"&status=eq.cobrado&order=created_at.desc&limit=1000",true);
   xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
   xhr.setRequestHeader("Authorization","Bearer sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
   xhr.timeout=8000;
@@ -914,7 +914,7 @@ function abrirTurno(){
   var ahora = new Date().toISOString();
   // Primero buscar turno existente del usuario
   var gxhr = new XMLHttpRequest();
-  gxhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?marca=eq."+(BRAND.marca||"sakura")+"&usuario_id=eq."+encodeURIComponent(user.username)+"&order=abierto_en.desc&limit=1",true);
+  gxhr.open("GET","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?marca=eq."+(BRAND.marca||"mandala")+"&usuario_id=eq."+encodeURIComponent(user.username)+"&order=abierto_en.desc&limit=1",true);
   gxhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
   gxhr.setRequestHeader("Authorization","Bearer sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
   gxhr.timeout=8000;
@@ -925,7 +925,7 @@ function abrirTurno(){
     var ts = existentes[0].abierto_en;
     // Ahora PATCH con abierto_en
     var pxhr = new XMLHttpRequest();
-    pxhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?abierto_en=eq."+encodeURIComponent(ts),true);
+    pxhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?abierto_en=eq."+encodeURIComponent(ts)+"&marca=eq."+(BRAND.marca||"mandala"),true);
     pxhr.setRequestHeader("Content-Type","application/json");
     pxhr.setRequestHeader("Prefer","return=representation");
     pxhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
@@ -963,7 +963,7 @@ function confirmarCierre(){
   var raw = localStorage.getItem(SESSION);
   var user = raw ? JSON.parse(raw) : {username:"?"};
   var xhr = new XMLHttpRequest();
-  xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?abierto_en=eq."+encodeURIComponent(t.abierto_en),true);
+  xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/turnos?abierto_en=eq."+encodeURIComponent(t.abierto_en)+"&marca=eq."+(BRAND.marca||"mandala"),true);
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.setRequestHeader("Prefer","return=minimal");
   xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
@@ -1099,7 +1099,7 @@ function PosEditProd(pid){var p=(window._prodCache||[]).find(function(r){return 
 function PosStock(pid){var stock=prompt("Cantidad en inventario:",localStorage.getItem("prodStock_"+pid)||"0");if(stock!==null){var n=parseInt(stock)||0;if(n>0)localStorage.setItem("prodStock_"+pid,String(n));else localStorage.removeItem("prodStock_"+pid);fetchProducts();toast("Stock actualizado")}}
 function PosToggleProd(pid,val){
   var xhr=new XMLHttpRequest();
-  xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/menu_items?id=eq."+pid,true);
+  xhr.open("PATCH","https://edquyomwiiaawqslsisd.supabase.co/rest/v1/menu_items?id=eq."+pid+"&marca=eq."+(BRAND.marca||"mandala"),true);
   xhr.setRequestHeader("Content-Type","application/json");
   xhr.setRequestHeader("Prefer","return=minimal");
   xhr.setRequestHeader("apikey","sb_publishable_aIIwHt4T8cDIeZjy48hRxQ_sdY7_QIf");
@@ -1107,7 +1107,7 @@ function PosToggleProd(pid,val){
   xhr.onload=function(){fetchProducts()};
   xhr.send(JSON.stringify({disponible:val}));
 }
-function addProduct(){var cat=$("pmCat").value.trim(),name=$("pmName").value.trim(),price=parseInt($("pmPrice").value,10),desc=$("pmDesc").value.trim(),est=$("pmEstacion").value.trim(),stock=$("pmStock").value.trim(),prep=$("pmPrep").value.trim();if(!cat||!name||isNaN(price)){toast("Completa datos");return}var eid=$("addProductBtn").dataset.editId,body=JSON.stringify({categoria:cat,nombre:name,precio:price,descripcion:desc,estacion:est,marca:BRAND.marca||""});var url=eid?API.replace("/rest/v1/orders","/rest/v1/menu_items")+"?id=eq."+eid:API.replace("/rest/v1/orders","/rest/v1/menu_items");fetch(url,{method:eid?"PATCH":"POST",headers:{"Content-Type":"application/json","Prefer":"return=minimal","apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY},body:body}).then(function(){if(eid){toast("Actualizado")}else{toast("Creado")}$("pmCat").value="";$("pmName").value="";$("pmPrice").value="";$("pmDesc").value="";$("pmEstacion").value="";$("pmStock").value="";$("pmPrep").value="";$("addProductBtn").textContent="Agregar producto";delete $("addProductBtn").dataset.editId;fetchProducts()}).catch(function(){toast("Error")})}
+function addProduct(){var cat=$("pmCat").value.trim(),name=$("pmName").value.trim(),price=parseInt($("pmPrice").value,10),desc=$("pmDesc").value.trim(),est=$("pmEstacion").value.trim(),stock=$("pmStock").value.trim(),prep=$("pmPrep").value.trim();if(!cat||!name||isNaN(price)){toast("Completa datos");return}var eid=$("addProductBtn").dataset.editId,body=JSON.stringify({categoria:cat,nombre:name,precio:price,descripcion:desc,estacion:est,marca:BRAND.marca||""});var url=eid?API.replace("/rest/v1/orders","/rest/v1/menu_items")+"?id=eq."+eid+"&marca=eq."+(BRAND.marca||"mandala"):API.replace("/rest/v1/orders","/rest/v1/menu_items");fetch(url,{method:eid?"PATCH":"POST",headers:{"Content-Type":"application/json","Prefer":"return=minimal","apikey":SUPABASE_KEY,"Authorization":"Bearer "+SUPABASE_KEY},body:body}).then(function(){if(eid){toast("Actualizado")}else{toast("Creado")}$("pmCat").value="";$("pmName").value="";$("pmPrice").value="";$("pmDesc").value="";$("pmEstacion").value="";$("pmStock").value="";$("pmPrep").value="";$("addProductBtn").textContent="Agregar producto";delete $("addProductBtn").dataset.editId;fetchProducts()}).catch(function(){toast("Error")})}
 function fetchUsers(){apiGet("usuarios?select=*&order=username").then(function(rows){
   $("usersList").innerHTML=rows.map(function(u){return'<div class="user-row"><span><span class="u-name">'+esc(u.username)+'</span> '+esc(u.nombre)+' <span class="u-rol">'+esc(u.rol)+'</span>'+(u.activo?'':' <span class="u-rol" style="color:var(--red)">INACTIVO</span>')+'</span><span class="u-btns"><button class="btn-sm" onclick="PosToggleUser(\''+u.id+'\','+!u.activo+')">'+(u.activo?'Desactivar':'Activar')+'</button><button class="btn-sm" onclick="PosChangePass(\''+u.id+'\',\''+esc(u.username)+'\')" title="Cambiar contraseña">🔑</button></span></div>'}).join("")
 })}
@@ -1259,7 +1259,7 @@ function sumarCorteCiego(){
   var diff=tot-v.total,r=$("arqueoResult");if(r){r.className='arqueo-result '+(diff===0?'ok':diff>0?'plus':'minus');var s=r.querySelector('small');if(s)s.textContent=diff===0?'✓ Todo coincide. Ya puedes cerrar.':diff>0?'Hay un sobrante de '+money(diff):'Hay un faltante de '+money(-diff)}
 }
 
-function datosCorte(tipo,v,extra){var t=state.turno||{},de=t.abierto_en?JSON.parse(localStorage.getItem("turnoData_"+t.abierto_en)||"{}"):{};return Object.assign({tipo:tipo,marca:BRAND.marca||"sakura",negocio:BRAND.business||"Sakura Sushi",fecha:new Date().toISOString(),usuario:t.usuario_nombre||"Administrador",abierto_en:t.abierto_en||"",pedidos:de.pedidosCount||0,ventas:v||de.ventas||{efectivo:0,tarjeta:0,transferencia:0,apps:0,total:0},movimientos:de.movs||[],efectivo_inicial:t.efectivo_inicial||0},extra||{})}
+function datosCorte(tipo,v,extra){var t=state.turno||{},de=t.abierto_en?JSON.parse(localStorage.getItem("turnoData_"+t.abierto_en)||"{}"):{};return Object.assign({tipo:tipo,marca:BRAND.marca||"mandala",negocio:BRAND.business||"Mandala Sushi",fecha:new Date().toISOString(),usuario:t.usuario_nombre||"Administrador",abierto_en:t.abierto_en||"",pedidos:de.pedidosCount||0,ventas:v||de.ventas||{efectivo:0,tarjeta:0,transferencia:0,apps:0,total:0},movimientos:de.movs||[],efectivo_inicial:t.efectivo_inicial||0},extra||{})}
 function imprimirCorte(data,done){var xhr=new XMLHttpRequest();xhr.open("POST","http://"+PRINT_HOST+":5100/corte",true);xhr.setRequestHeader("Content-Type","application/json");xhr.timeout=6000;xhr.onload=function(){if(xhr.status===200){toast(data.tipo+" impreso");if(done)done(true)}else{toast("No se pudo imprimir "+data.tipo);if(done)done(false)}};xhr.onerror=function(){toast("Impresora no disponible. Abre el receptor de impresión");if(done)done(false)};xhr.ontimeout=function(){toast("La impresora tardó demasiado");if(done)done(false)};xhr.send(JSON.stringify(data))}
 function hacerCorteX(){if(!state.turno){toast("Primero abre una caja");return}calcularVentas(function(){var de=JSON.parse(localStorage.getItem("turnoData_"+state.turno.abierto_en)||"{}");imprimirCorte(datosCorte("CORTE X",de.ventas))})}
 function resumenDia(done){var ini=new Date();ini.setHours(0,0,0,0);apiGet("orders?select=payment,total,created_at,notes,status&marca=eq."+encodeURIComponent(BRAND.marca||"")+"&status=eq.cobrado&order=created_at.desc&limit=1000").then(function(rows){rows=rows.filter(function(o){return fechaCobro(o)>=ini});var v={efectivo:0,tarjeta:0,transferencia:0,apps:0,online:0,total:0};rows.forEach(function(o){var p=(o.payment||"").toLowerCase(),n=o.total||0;v.total+=n;if(p.includes("online")){v.online+=n}else if(p.includes("efect")){v.efectivo+=n}else if(p.includes("tarj")){v.tarjeta+=n}else if(p.includes("transf")){v.transferencia+=n}else{v.apps+=n}});done(v,rows,ini)}).catch(function(){toast("No se pudo calcular el día")})}
@@ -1276,8 +1276,8 @@ function abrirTurno(){
     if(existente){state.turno=existente;toast("Se recuperó la caja que ya estaba abierta");$("turnoBadge").textContent="🟢 Caja abierta";renderCaja();return}
     return new Promise(function(resolve,reject){
       var ahora=new Date().toISOString(),xhr=new XMLHttpRequest();xhr.open("POST",SUPABASE_URL+"/rest/v1/turnos",true);xhr.setRequestHeader("Content-Type","application/json");xhr.setRequestHeader("Prefer","return=representation");xhr.setRequestHeader("apikey",SUPABASE_KEY);xhr.setRequestHeader("Authorization","Bearer "+SUPABASE_KEY);xhr.timeout=8000;
-      xhr.onload=function(){if(xhr.status>=200&&xhr.status<300){var rows=JSON.parse(xhr.responseText||"[]");resolve(rows[0]||{marca:BRAND.marca||"sakura",usuario_id:user.username,usuario_nombre:user.nombre,abierto_en:ahora,efectivo_inicial:ini,estado:"abierto"})}else reject(new Error("HTTP "+xhr.status))};xhr.onerror=function(){reject(new Error("Sin conexión"))};xhr.ontimeout=function(){reject(new Error("Tiempo agotado"))};
-      xhr.send(JSON.stringify({marca:BRAND.marca||"sakura",usuario_id:user.username,usuario_nombre:user.nombre,abierto_en:ahora,efectivo_inicial:ini,efectivo_final:0,estado:"abierto",cerrado_en:null}));
+      xhr.onload=function(){if(xhr.status>=200&&xhr.status<300){var rows=JSON.parse(xhr.responseText||"[]");resolve(rows[0]||{marca:BRAND.marca||"mandala",usuario_id:user.username,usuario_nombre:user.nombre,abierto_en:ahora,efectivo_inicial:ini,estado:"abierto"})}else reject(new Error("HTTP "+xhr.status))};xhr.onerror=function(){reject(new Error("Sin conexión"))};xhr.ontimeout=function(){reject(new Error("Tiempo agotado"))};
+      xhr.send(JSON.stringify({marca:BRAND.marca||"mandala",usuario_id:user.username,usuario_nombre:user.nombre,abierto_en:ahora,efectivo_inicial:ini,efectivo_final:0,estado:"abierto",cerrado_en:null}));
     }).then(function(t){state.turno=t;localStorage.setItem("turnoData_"+t.abierto_en,JSON.stringify({movs:[],ventas:{efectivo:0,tarjeta:0,transferencia:0,apps:0,online:0,total:0},pedidosCount:0}));$("turnoBadge").textContent="🟢 Caja abierta";toast("Caja abierta con "+money(ini));renderCaja()});
   }).catch(function(err){toast("No se pudo abrir caja: "+err.message)}).finally(function(){if(btn){btn.disabled=false;btn.textContent="🔓 Abrir turno"}});
 }
