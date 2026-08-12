@@ -34,7 +34,7 @@ REM 1. Servidor web (puerto 3000)
 netstat -ano | findstr ":3000.*LISTENING" >nul
 if errorlevel 1 (
     echo [!] Servidor web CAIDO - reiniciando...
-    start "Mandala Web" cmd /c "python -m http.server 3000"
+    start "Mandala Web" cmd /c "python web_server.py --port 3000"
 ) else (
     echo [OK] Servidor web (3000)
 )

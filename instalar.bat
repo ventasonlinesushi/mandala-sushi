@@ -59,7 +59,7 @@ echo   ==========================================
 echo.
 
 REM 6. Iniciar servidores
-start "Web Server" cmd /c "python -m http.server %PUERTO%"
+start "Web Server" cmd /c "python web_server.py --port %PUERTO%"
 start "Print Server" cmd /c "cd /d %~dp0receptor && python print_server.py"
 start "Receiver" cmd /c "cd /d %~dp0receptor && python ordereceiver.py --marca mandala"
 timeout /t 3 /nobreak >nul
