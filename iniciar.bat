@@ -27,23 +27,36 @@ echo     NO CIERRES ESTA VENTANA
 echo   ==========================================
 echo.
 
-echo Iniciando servidores...
+:loop
+echo [%time%] Verificando servicios...
 
-REM 1. Servidor web
-start "Mandala Web" cmd /c "python -m http.server 3000"
+REM 1. Servidor web (puerto 3000)
+netstat -ano | findstr ":3000.*LISTENING" >nul
+if errorlevel 1 (
+    echo [!] Servidor web CAIDO - reiniciando...
+    start "Mandala Web" cmd /c "python -m http.server 3000"
+) else (
+    echo [OK] Servidor web (3000)
+)
 
-REM 2. Servidor de impresion
-start "Mandala Print" cmd /c "cd /d %~dp0receptor && python print_server.py"
+REM 2. Servidor de impresion (puerto 5100)
+netstat -ano | findstr ":5100.*LISTENING" >nul
+if errorlevel 1 (
+    echo [!] Servidor de impresion CAIDO - reiniciando...
+    start "Mandala Print" cmd /c "cd /d %~dp0receptor && python print_server.py"
+) else (
+    echo [OK] Servidor de impresion (5100)
+)
 
 REM 3. Receptor de pedidos online
-start "Mandala Receiver" cmd /c "cd /d %~dp0receptor && python ordereceiver.py --marca mandala"
+tasklist /FI "WINDOWTITLE eq Mandala Receiver*" 2>nul | findstr "cmd.exe" >nul
+if errorlevel 1 (
+    echo [!] Receptor de pedidos CAIDO - reiniciando...
+    start "Mandala Receiver" cmd /c "cd /d %~dp0receptor && python ordereceiver.py --marca mandala"
+) else (
+    echo [OK] Receptor de pedidos online
+)
 
-echo.
-echo Todos los servicios iniciados.
-echo Presiona cualquier tecla para DETENER TODO...
-pause >nul
-
-echo Deteniendo servicios...
-taskkill /F /FI "WINDOWTITLE eq Mandala*" /T 2>nul
-echo Servicios detenidos.
-pause
+echo [%time%] Todos los servicios OK. Proxima verificacion en 15s...
+timeout /t 15 /nobreak >nul
+goto loop
