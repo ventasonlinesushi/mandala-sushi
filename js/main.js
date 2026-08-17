@@ -81,8 +81,6 @@
       sheetView: c.resolve("sheetView"),
       cartVM: c.resolve("cartVM"),
       currency: c.resolve("currency"),
-      orderService: c.resolve("orderService"),
-      orderRepository: c.resolve("orderRepository"),
       hours: c.resolve("hours")
     }));
 
@@ -103,8 +101,6 @@
     global.setPayment = p => app.checkout.setPayment(p);
     global.setPalitos = v => app.checkout.setPalitos(v);
     global.sendWhatsApp = () => app.checkout.send();
-    global.openReport = () => app.openReport();
-    global.closeReport = () => app.closeReport();
   }
 
   /* ----- Cargar menú: Supabase o estático ----- */
@@ -119,17 +115,21 @@
         if (!rows || !rows.length) return initApp(ST);
         var cats = [], catMap = {};
         PosApp.menuConfig = rows.filter(function(p){ return p.categoria === "__POS_CONFIG__"; }).map(function(p){ try { return JSON.parse(p.descripcion || "{}"); } catch(e) { return null; } }).filter(function(x){ return x && x.active !== false; });
-        rows.filter(function(p){ return p.categoria !== "__POS_CONFIG__" && p.disponible === true; }).forEach(function (p) {
+        var packages = {};
+        rows.filter(function(p){ return p.categoria === "__POS_PACKAGES__" && p.disponible !== false; }).forEach(function(p){ try { var x=JSON.parse(p.descripcion||"{}"); if(x.name)packages[x.name]=x; } catch(e){} });
+        rows.filter(function(p){ return p.categoria !== "__POS_CONFIG__" && p.categoria !== "__POS_PACKAGES__" && p.disponible === true; }).forEach(function (p) {
           if (!catMap[p.categoria]) {
             catMap[p.categoria] = { name: p.categoria, items: [] };
             cats.push(catMap[p.categoria]);
           }
+          var pkg = packages[p.nombre];
           catMap[p.categoria].items.push({
             name: p.nombre,
             price: p.precio,
             desc: p.descripcion || "",
             category: p.categoria,
-            id: p.id
+            id: p.id,
+            package: pkg ? { count:pkg.choose||0, rolls:pkg.options||[], options:pkg.options||[], fixed:pkg.fixed||[], repeat:pkg.repeat!==false } : undefined
           });
         });
         initApp(cats);

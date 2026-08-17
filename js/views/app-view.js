@@ -13,8 +13,6 @@
       this.sheets = deps.sheetView;
       this.cart = deps.cartVM;
       this.currency = deps.currency;
-      this.orders = deps.orderService;
-      this.orderRepo = deps.orderRepository;
       this.hours = deps.hours;
       this.el = {};
     }
@@ -34,9 +32,7 @@
         drawerBody: document.getElementById("drawerBody"),
         drawerFoot: document.getElementById("drawerFoot"),
         drawerTotal: document.getElementById("drawerTotal"),
-        checkout: document.getElementById("checkout"),
-        report: document.getElementById("report"),
-        reportBody: document.getElementById("reportBody")
+        checkout: document.getElementById("checkout")
       };
 
       this.checkout.cache();
@@ -107,86 +103,6 @@
       this.el.searchWrap.classList.remove("hidden");
       this.refreshFloat();
       window.scrollTo(0, 0);
-    }
-
-    openReport() {
-      this.renderReport();
-      this.el.report.classList.remove("hidden");
-      requestAnimationFrame(() => this.el.report.classList.add("show"));
-    }
-
-    closeReport() {
-      this.el.report.classList.remove("show");
-      setTimeout(() => this.el.report.classList.add("hidden"), 280);
-    }
-
-    renderReport() {
-      const body = this.el.reportBody;
-      const orders = this.orderRepo.orders();
-      body.innerHTML = "";
-      if (!orders.length) {
-        const empty = document.createElement("div");
-        empty.className = "empty-cart";
-        empty.innerHTML = '<div class="big">📊</div>Aún no hay pedidos registrados en este dispositivo.<br>Se guardan al enviar un pedido por WhatsApp.';
-        body.appendChild(empty);
-        return;
-      }
-      const total = orders.reduce((a, o) => a + (o.total || 0), 0);
-      const today = orders.filter(o => o.date && new Date(o.date).toDateString() === new Date().toDateString()).length;
-
-      const stats = document.createElement("div");
-      stats.className = "rep-stats";
-      const stat = (n, label) => {
-        const d = document.createElement("div");
-        d.className = "rep-stat";
-        const b = document.createElement("b");
-        b.textContent = n;
-        const s = document.createElement("span");
-        s.textContent = label;
-        d.appendChild(b); d.appendChild(s);
-        return d;
-      };
-      stats.appendChild(stat(orders.length, "pedidos"));
-      stats.appendChild(stat(today, "hoy"));
-      stats.appendChild(stat(this.currency.format(total), "ingresos"));
-      body.appendChild(stats);
-
-      const dl = document.createElement("button");
-      dl.type = "button";
-      dl.className = "btn btn-primary";
-      dl.textContent = "⬇ Descargar CSV";
-      dl.onclick = () => this._downloadCsv(orders);
-      body.appendChild(dl);
-
-      const list = document.createElement("div");
-      list.className = "rep-list";
-      orders.slice().reverse().forEach(o => {
-        const row = document.createElement("div");
-        row.className = "rep-row";
-        const f = document.createElement("span");
-        f.className = "rep-folio";
-        f.textContent = "#" + o.folio;
-        const name = document.createElement("div");
-        name.className = "rep-name";
-        name.textContent = (o.name || "") + " · " + (o.orderType === "domicilio" ? "a domicilio" : "para llevar");
-        const price = document.createElement("b");
-        price.textContent = this.currency.format(o.total);
-        row.appendChild(f);
-        row.appendChild(name);
-        row.appendChild(price);
-        list.appendChild(row);
-      });
-      body.appendChild(list);
-    }
-
-    _downloadCsv(orders) {
-      const csv = this.orders.csv(orders);
-      const blob = new Blob(["\ufeff" + csv], { type: "text/csv;charset=utf-8" });
-      const a = document.createElement("a");
-      a.href = URL.createObjectURL(blob);
-      a.download = "mandala-pedidos.csv";
-      a.click();
-      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
     }
 
     editOrder() {
