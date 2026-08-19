@@ -109,8 +109,8 @@
 
   if (sb && sb.url && sb.key) {
     const url = sb.url.replace(/\/$/, "") + "/rest/v1/menu_items?marca=eq." + encodeURIComponent(brand.marca || "") + "&order=categoria,orden";
-    fetch(url, { headers: { "apikey": sb.key, "Authorization": "Bearer " + sb.key } })
-      .then(function (r) { return r.json(); })
+    fetch(url, { cache:"no-store", headers: { "apikey": sb.key, "Authorization": "Bearer " + sb.key, "Cache-Control":"no-cache" } })
+      .then(function (r) { if(!r.ok) throw new Error("No se pudo actualizar el menú"); return r.json(); })
       .then(function (rows) {
         if (!rows || !rows.length) return initApp(ST);
         var cats = [], catMap = {};
@@ -129,7 +129,7 @@
             desc: p.descripcion || "",
             category: p.categoria,
             id: p.id,
-            package: pkg ? { count:pkg.choose||0, rolls:pkg.options||[], options:pkg.options||[], fixed:pkg.fixed||[], repeat:pkg.repeat!==false } : undefined
+            package: pkg ? { count:pkg.choose||0, rolls:pkg.options||[], options:pkg.options||[], fixed:pkg.fixed||[], repeat:pkg.repeat!==false, groups:pkg.groups||[] } : undefined
           });
         });
         initApp(cats);
