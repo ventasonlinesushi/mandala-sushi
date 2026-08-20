@@ -127,6 +127,8 @@
             name: p.nombre,
             price: p.precio,
             desc: p.descripcion || "",
+            image: p.image_url || "",
+            photo: p.image_url || "",
             category: p.categoria,
             id: p.id,
             package: pkg ? { count:pkg.choose||0, rolls:pkg.options||[], options:pkg.options||[], fixed:pkg.fixed||[], repeat:pkg.repeat!==false, groups:pkg.groups||[] } : undefined
