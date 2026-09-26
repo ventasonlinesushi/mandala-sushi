@@ -123,6 +123,8 @@
             cats.push(catMap[p.categoria]);
           }
           var pkg = packages[p.nombre];
+          var staticCat = ST.find(function(c){ return c.name === p.categoria; });
+          var staticItem = staticCat && (staticCat.items || []).find(function(it){ return it.name === p.nombre; });
           catMap[p.categoria].items.push({
             name: p.nombre,
             price: p.precio,
@@ -131,6 +133,7 @@
             photo: p.image_url || "",
             category: p.categoria,
             id: p.id,
+            sauceTargets: staticItem && staticItem.sauceTargets ? staticItem.sauceTargets.slice() : undefined,
             package: pkg ? { count:pkg.choose||0, rolls:pkg.options||[], options:pkg.options||[], fixed:pkg.fixed||[], repeat:pkg.repeat!==false, groups:pkg.groups||[] } : undefined
           });
         });

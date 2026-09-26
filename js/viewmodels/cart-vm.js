@@ -89,10 +89,10 @@
         const existing = cart.find(c => c.key === it.key);
         if (existing) {
           cart = cart.map(c => c.key === it.key
-            ? global.PosApp.CartItem.create(it.key, it.name, it.price, c.qty + it.qty)
+            ? this._copyRepeated(it, global.PosApp.CartItem.create(it.key, it.name, it.price, c.qty + it.qty))
             : c);
         } else {
-          cart.push(global.PosApp.CartItem.create(it.key, it.name, it.price, it.qty));
+          cart.push(this._copyRepeated(it, global.PosApp.CartItem.create(it.key, it.name, it.price, it.qty)));
         }
       });
       this.cart = this._service.sanitize(cart);
@@ -102,6 +102,13 @@
 
     _persist() {
       this._repository.save(this.cart);
+    }
+
+    _copyRepeated(from, to) {
+      if (from.sauce_targets) to.sauce_targets = from.sauce_targets.slice();
+      if (from.package_detail) to.package_detail = from.package_detail;
+      if (from.desc) to.desc = from.desc;
+      return to;
     }
 
     _emit() {

@@ -31,7 +31,9 @@
           name: c.name,
           qty: c.qty,
           price: c.price,
-          desc: c.desc || ""
+          desc: c.desc || "",
+          sauce_targets: c.sauce_targets || [],
+          package_detail: c.package_detail || null
         })),
         total: fields.total
       };

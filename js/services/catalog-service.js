@@ -69,6 +69,34 @@
       return item.name + (variant ? " · " + variant.label : "");
     }
 
+    categoryOf(item) {
+      if (!item) return "";
+      if (item.category) return item.category;
+      for (let i = 0; i < this._menu.length; i += 1) {
+        if ((this._menu[i].items || []).indexOf(item) !== -1) return this._menu[i].name || "";
+      }
+      return "";
+    }
+
+    isSauceEligible(item) {
+      if (!item) return false;
+      const category = this.categoryOf(item);
+      return /^Rollos\b/i.test(category) || /\b(?:Yakimeshi|Gohan)\b/i.test(item.name || "");
+    }
+
+    isSauceEligibleName(name) {
+      const clean = String(name || "").replace(/\s*\[[^\]]*\]\s*$/, "").split(" · ")[0].trim();
+      for (let i = 0; i < this._menu.length; i += 1) {
+        const items = this._menu[i].items || [];
+        for (let j = 0; j < items.length; j += 1) {
+          if (String(items[j].name || "").toLowerCase() === clean.toLowerCase()) {
+            return this.isSauceEligible(items[j]);
+          }
+        }
+      }
+      return /\b(?:roll|maki|furai|geisha|kiroi pollito|daisuki|nevadito|okinawa|yakimeshi|gohan)\b/i.test(clean);
+    }
+
     pkgCountOf(item) {
       return (item && item.package && item.package.count) || 2;
     }

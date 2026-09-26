@@ -18,11 +18,39 @@
           const clean = e.key.indexOf("pkg:") === 0 ? e.key.slice(4) : e.key;
           const parts = clean.split(":");
           const item = this._catalog.getItem(+parts[0], +parts[1]);
+          if (item && !Array.isArray(e.sauce_targets)) {
+            e.sauce_targets = e.package_detail
+              ? this._packageSauceTargets(e.package_detail.selected || [], e.package_detail.fixed || [])
+              : this._targetsForItem(item, item.name);
+          }
           return !!item && item.available !== false;
         });
       } catch (e) {
         return [];
       }
+    }
+
+    _copyDetails(from, to) {
+      if (from.sauce_targets) to.sauce_targets = from.sauce_targets.slice();
+      if (from.package_detail) to.package_detail = from.package_detail;
+      if (from.desc) to.desc = from.desc;
+      return to;
+    }
+
+    _targetsForItem(item, label) {
+      if (Array.isArray(item.sauceTargets)) return item.sauceTargets.slice();
+      return this._catalog.isSauceEligible(item) ? [label || item.name] : [];
+    }
+
+    _packageSauceTargets(selected, fixedItems) {
+      const targets = (selected || []).filter(name => this._catalog.isSauceEligibleName(name));
+      (fixedItems || []).forEach(fixed => {
+        const name = typeof fixed === "string" ? fixed : fixed.name;
+        const qty = typeof fixed === "object" ? Number(fixed.qty || 1) : 1;
+        if (!this._catalog.isSauceEligibleName(name)) return;
+        for (let n = 0; n < qty; n += 1) targets.push(name);
+      });
+      return targets;
     }
 
     changeQty(cart, key, delta) {
@@ -36,15 +64,17 @@
         const basePrice = this._catalog.getPrice(item, info.variant);
         const chosen = global.PosApp.MenuOptions ? global.PosApp.MenuOptions.choose(item, baseName, basePrice) : { name: baseName, price: basePrice };
         if (!chosen) return result;
-        result.push(global.PosApp.CartItem.create(
+        const created = global.PosApp.CartItem.create(
           key,
           chosen.name,
           chosen.price,
           delta
-        ));
+        );
+        created.sauce_targets = this._targetsForItem(item, baseName);
+        result.push(created);
       } else {
         const index = result.indexOf(entry);
-        result[index] = global.PosApp.CartItem.create(entry.key, entry.name, entry.price, entry.qty + delta);
+        result[index] = this._copyDetails(entry, global.PosApp.CartItem.create(entry.key, entry.name, entry.price, entry.qty + delta));
         if (result[index].qty <= 0) result.splice(index, 1);
       }
       return result;
@@ -98,15 +128,14 @@
       const entry = result.find(e => e.key === key);
 
       if (entry) {
-        const updated = global.PosApp.CartItem.create(entry.key, entry.name, entry.price, entry.qty + 1);
-        updated.package_detail = entry.package_detail;
-        updated.desc = entry.desc;
+        const updated = this._copyDetails(entry, global.PosApp.CartItem.create(entry.key, entry.name, entry.price, entry.qty + 1));
         result[result.indexOf(entry)] = updated;
       } else {
         const created = global.PosApp.CartItem.create(key, item.name + (sorted.length ? " · " + sorted.join(" + ") : ""), item.price, 1);
         const options = groups.length ? groups.reduce((all,g) => all.concat(g.options||[]), []) : (item.package.options||item.package.rolls||[]);
         created.package_detail = { name:item.name, selected:selected.slice(), selected_groups:(item._packageSelections||[]), groups:groups, fixed:(item.package.fixed||[]), options:options };
         created.desc = JSON.stringify(created.package_detail);
+        created.sauce_targets = this._packageSauceTargets(selected, item.package.fixed || []);
         result.push(created);
       }
       return result;
@@ -119,7 +148,7 @@
       const last = entries[entries.length - 1];
       const result = cart.slice();
       const index = result.indexOf(last);
-      result[index] = global.PosApp.CartItem.create(last.key, last.name, last.price, last.qty - 1);
+      result[index] = this._copyDetails(last, global.PosApp.CartItem.create(last.key, last.name, last.price, last.qty - 1));
       if (result[index].qty <= 0) result.splice(index, 1);
       return result;
     }

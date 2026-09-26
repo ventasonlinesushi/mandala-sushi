@@ -14,6 +14,8 @@
       this.orderType = "llevar";
       this.payment = "Efectivo";
       this.palitos = "Si";
+      this.sauceSelections = {};
+      this.sauceOptions = ["Salsa de anguila", "Soya con limón", "Chiles toreados"];
       this.e = {};
     }
 
@@ -32,7 +34,7 @@
         optEfectivo: document.getElementById("optEfectivo"),
         optTransferencia: document.getElementById("optTransferencia"),
         fNotes: document.getElementById("fNotes"),
-        fSalsas: document.getElementById("fSalsas"),
+        sauceSelector: document.getElementById("sauceSelector"),
         optPalitosSi: document.getElementById("optPalitosSi"),
         optPalitosNo: document.getElementById("optPalitosNo"),
         checkoutItems: document.getElementById("checkoutItems"),
@@ -73,6 +75,90 @@
         this.e.checkoutItems.appendChild(line);
       });
       this.e.checkoutTotal.textContent = this.currency.format(this.cart.total);
+      this._renderSauces();
+    }
+
+    _sauceTargets() {
+      const targets = [];
+      this.cart.items.forEach(c => {
+        const baseTargets = c.sauce_targets || [];
+        for (let unit = 0; unit < c.qty; unit += 1) {
+          baseTargets.forEach((name, index) => {
+            targets.push({
+              id: c.key + "|" + unit + "|" + index,
+              label: name + (c.qty > 1 ? " · pedido " + (unit + 1) : "")
+            });
+          });
+        }
+      });
+      const totals = {};
+      const seen = {};
+      targets.forEach(t => { totals[t.label] = (totals[t.label] || 0) + 1; });
+      targets.forEach(t => {
+        seen[t.label] = (seen[t.label] || 0) + 1;
+        t.displayLabel = t.label + (totals[t.label] > 1 ? " · " + seen[t.label] : "");
+      });
+      return targets;
+    }
+
+    _renderSauces() {
+      const host = this.e.sauceSelector;
+      if (!host) return;
+      const targets = this._sauceTargets();
+      const valid = {};
+      targets.forEach(t => { valid[t.id] = true; });
+      Object.keys(this.sauceSelections).forEach(id => { if (!valid[id]) delete this.sauceSelections[id]; });
+      host.innerHTML = "";
+      if (!targets.length) {
+        host.innerHTML = '<div class="sauce-empty">Este pedido no requiere selección de salsas.</div>';
+        return;
+      }
+      targets.forEach(target => {
+        const card = document.createElement("div");
+        card.className = "sauce-card";
+        const title = document.createElement("b");
+        title.textContent = target.displayLabel;
+        card.appendChild(title);
+        const options = document.createElement("div");
+        options.className = "sauce-options";
+        this.sauceOptions.forEach(name => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "sauce-option";
+          const selected = this.sauceSelections[target.id] || [];
+          button.classList.toggle("active", selected.indexOf(name) !== -1);
+          button.textContent = name;
+          button.onclick = () => {
+            if (!this._toggleSauce(target.id, name)) {
+              alert("Solo puedes escoger 2 opciones por cada sushi, yakimeshi o gohan.");
+              return;
+            }
+            this._renderSauces();
+          };
+          options.appendChild(button);
+        });
+        card.appendChild(options);
+        host.appendChild(card);
+      });
+    }
+
+    _toggleSauce(targetId, name) {
+      const current = (this.sauceSelections[targetId] || []).slice();
+      const index = current.indexOf(name);
+      if (index !== -1) current.splice(index, 1);
+      else if (current.length >= 2) return false;
+      else current.push(name);
+      this.sauceSelections[targetId] = current;
+      return true;
+    }
+
+    _sauceSummary() {
+      const lines = [];
+      this._sauceTargets().forEach(target => {
+        const selected = this.sauceSelections[target.id] || [];
+        lines.push(target.displayLabel + ": " + (selected.length ? selected.join(" + ") : "Sin salsas"));
+      });
+      return lines.join(" | ");
     }
 
     _form() {
@@ -83,7 +169,7 @@
       const cruzamiento = this.e.fCruzamiento.value.trim();
       const espec = this.e.fEspec.value.trim();
       const notes = this.e.fNotes.value.trim();
-      const salsas = this.e.fSalsas.value.trim();
+      const salsas = this._sauceSummary();
 
       if (!name) { alert("Escribe tu nombre."); return null; }
       if (!phone) { alert("Escribe tu teléfono."); return null; }

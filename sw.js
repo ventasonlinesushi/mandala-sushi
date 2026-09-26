@@ -2,11 +2,11 @@
    Service Worker de Mandala Sushi: caché offline de la app.
    Al actualizar archivos, incrementa CACHE (ej. mandala-v2).
    ============================================================ */
-const CACHE = "mandala-v6-product-images";
+const CACHE = "mandala-v7-sauces";
 const ASSETS = [
   "./",
   "index.html",
-  "style.css?v=modern-1",
+  "style.css?v=sauces-1",
   "logo.png",
   "manifest.json",
   "mandala-card.png",
@@ -21,9 +21,9 @@ const ASSETS = [
   "js/repositories/order-repository.js",
   "js/services/currency-service.js",
   "js/services/gradient-service.js",
-  "js/services/catalog-service.js",
+  "js/services/catalog-service.js?v=sauces-1",
   "js/services/menu-options-service.js?v=2",
-  "js/services/cart-service.js",
+  "js/services/cart-service.js?v=sauces-1",
   "js/services/loyalty-service.js",
   "js/services/hours-service.js",
   "js/services/order-service.js",
@@ -35,10 +35,10 @@ const ASSETS = [
   "js/viewmodels/package-vm.js",
   "js/views/menu-view.js?v=product-images-1",
   "js/views/drawer-view.js",
-  "js/views/checkout-view.js",
+  "js/views/checkout-view.js?v=sauces-1",
   "js/views/sheet-view.js",
   "js/views/app-view.js",
-  "js/main.js?v=product-images-1"
+  "js/main.js?v=sauces-1"
 ];
 
 self.addEventListener("install", e => {
