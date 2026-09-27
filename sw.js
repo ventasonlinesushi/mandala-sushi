@@ -2,11 +2,11 @@
    Service Worker de Mandala Sushi: caché offline de la app.
    Al actualizar archivos, incrementa CACHE (ej. mandala-v2).
    ============================================================ */
-const CACHE = "mandala-v8-alga";
+const CACHE = "mandala-v9-extras";
 const ASSETS = [
   "./",
   "index.html",
-  "style.css?v=alga-1",
+  "style.css?v=extras-1",
   "logo.png",
   "manifest.json",
   "mandala-card.png",
@@ -21,23 +21,23 @@ const ASSETS = [
   "js/repositories/order-repository.js",
   "js/services/currency-service.js",
   "js/services/gradient-service.js",
-  "js/services/catalog-service.js?v=alga-1",
+  "js/services/catalog-service.js?v=extras-1",
   "js/services/menu-options-service.js?v=2",
-  "js/services/cart-service.js?v=alga-1",
+  "js/services/cart-service.js?v=extras-1",
   "js/services/loyalty-service.js",
   "js/services/hours-service.js",
   "js/services/order-service.js?v=alga-1",
   "js/services/checkout-service.js?v=alga-1",
   "js/viewmodels/catalog-vm.js",
-  "js/viewmodels/cart-vm.js?v=alga-1",
+  "js/viewmodels/cart-vm.js?v=extras-1",
   "js/viewmodels/loyalty-vm.js",
   "js/viewmodels/checkout-vm.js?v=alga-1",
   "js/viewmodels/package-vm.js",
-  "js/views/menu-view.js?v=product-images-1",
-  "js/views/drawer-view.js",
+  "js/views/menu-view.js?v=extras-1",
+  "js/views/drawer-view.js?v=extras-1",
   "js/views/checkout-view.js?v=alga-1",
   "js/views/sheet-view.js",
-  "js/views/app-view.js",
+  "js/views/app-view.js?v=extras-1",
   "js/main.js?v=sauces-1"
 ];
 

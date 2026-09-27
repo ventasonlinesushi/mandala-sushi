@@ -104,6 +104,13 @@
       bottom.appendChild(controls);
       main.appendChild(top); main.appendChild(bottom);
 
+      if (c.desc && c.key.indexOf("|custom=") !== -1) {
+        const detail = document.createElement("div");
+        detail.className = "cl-detail";
+        detail.textContent = c.desc;
+        main.insertBefore(detail, bottom);
+      }
+
       line.appendChild(main);
       return line;
     }

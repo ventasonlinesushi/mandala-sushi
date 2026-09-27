@@ -12,7 +12,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;700;800&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=alga-1">
+<link rel="stylesheet" href="style.css?v=extras-1">
 </head>
 <body>
 
@@ -71,6 +71,43 @@
   <div id="pkgOptions"></div>
   <div class="pkg-count" id="pkgCount">Seleccionados: 0 de 2</div>
   <button class="btn btn-primary" id="pkgAdd" onclick="confirmPackage()" disabled>Agregar</button>
+</div>
+
+<div class="custom-backdrop hidden" id="customModal" role="dialog" aria-modal="true" aria-labelledby="customTitle">
+  <div class="custom-card">
+    <div class="custom-banner">🍣 <span>MANDALA SUSHI · A TU GUSTO</span></div>
+    <div class="custom-content">
+      <h2 id="customTitle">Personaliza tu rollo</h2>
+      <p id="customProduct"></p>
+      <div class="custom-section"><h3>Cambia la proteína <small>Opcional · se retira la original</small></h3>
+        <select id="proteinReplace" class="custom-select">
+          <option value="">Conservar la proteína original · +$0</option>
+          <option value="pollo">Cambiar por pollo · +$25</option>
+          <option value="arrachera">Cambiar por arrachera · +$30</option>
+          <option value="camaron">Cambiar por camarón · +$35</option>
+          <option value="kanikama">Cambiar por kanikama · +$35</option>
+        </select>
+      </div>
+      <div class="custom-section"><h3>Agrega más proteína <small>Opcional · puedes elegir varias</small></h3>
+        <div class="custom-options">
+          <label><input type="checkbox" name="proteinAdd" value="pollo"><span>Pollo</span><b>+$25</b></label>
+          <label><input type="checkbox" name="proteinAdd" value="arrachera"><span>Arrachera</span><b>+$30</b></label>
+          <label><input type="checkbox" name="proteinAdd" value="camaron"><span>Camarón</span><b>+$35</b></label>
+          <label><input type="checkbox" name="proteinAdd" value="kanikama"><span>Kanikama</span><b>+$35</b></label>
+        </div>
+      </div>
+      <div class="custom-section"><h3>Agrega topping <small>Opcional · puedes elegir varios</small></h3>
+        <div class="custom-options">
+          <label><input type="checkbox" name="rollTopping" value="tampico"><span>Tampico</span><b>+$35</b></label>
+          <label><input type="checkbox" name="rollTopping" value="spicy"><span>Spicy</span><b>+$6</b></label>
+        </div>
+      </div>
+      <div class="custom-bottom"><span>Total del rollo <strong id="customTotal">$0</strong></span>
+        <button type="button" class="btn btn-primary" id="customConfirm">Agregar al pedido</button>
+        <button type="button" class="custom-cancel" id="customCancel">Cancelar</button>
+      </div>
+    </div>
+  </div>
 </div>
 
 <div class="checkout hidden" id="checkout">
@@ -164,23 +201,23 @@
 <script src="js/repositories/order-repository.js"></script>
 <script src="js/services/currency-service.js"></script>
 <script src="js/services/gradient-service.js"></script>
-<script src="js/services/catalog-service.js?v=alga-1"></script>
+<script src="js/services/catalog-service.js?v=extras-1"></script>
 <script src="js/services/menu-options-service.js?v=2"></script>
-<script src="js/services/cart-service.js?v=alga-1"></script>
+<script src="js/services/cart-service.js?v=extras-1"></script>
 <script src="js/services/loyalty-service.js"></script>
 <script src="js/services/hours-service.js"></script>
 <script src="js/services/order-service.js?v=alga-1"></script>
 <script src="js/services/checkout-service.js?v=alga-1"></script>
 <script src="js/viewmodels/catalog-vm.js"></script>
-<script src="js/viewmodels/cart-vm.js?v=alga-1"></script>
+<script src="js/viewmodels/cart-vm.js?v=extras-1"></script>
 <script src="js/viewmodels/loyalty-vm.js"></script>
 <script src="js/viewmodels/checkout-vm.js?v=alga-1"></script>
 <script src="js/viewmodels/package-vm.js"></script>
-<script src="js/views/menu-view.js?v=product-images-1"></script>
-<script src="js/views/drawer-view.js"></script>
+<script src="js/views/menu-view.js?v=extras-1"></script>
+<script src="js/views/drawer-view.js?v=extras-1"></script>
 <script src="js/views/checkout-view.js?v=alga-1"></script>
 <script src="js/views/sheet-view.js?v=package-groups-1"></script>
-<script src="js/views/app-view.js"></script>
+<script src="js/views/app-view.js?v=extras-1"></script>
 <script src="js/main.js?v=sauces-1"></script>
 </body>
 </html>

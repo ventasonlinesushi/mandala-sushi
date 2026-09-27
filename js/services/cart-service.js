@@ -15,7 +15,8 @@
       try {
         return (cart || []).filter(e => {
           if (!e || typeof e.key !== "string") return false;
-          const clean = e.key.indexOf("pkg:") === 0 ? e.key.slice(4) : e.key;
+          const baseKey = e.key.split("|")[0];
+          const clean = baseKey.indexOf("pkg:") === 0 ? baseKey.slice(4) : baseKey;
           const parts = clean.split(":");
           const item = this._catalog.getItem(+parts[0], +parts[1]);
           if (item && !Array.isArray(e.sauce_targets)) {
@@ -100,6 +101,25 @@
         const index = result.indexOf(entry);
         result[index] = this._copyDetails(entry, global.PosApp.CartItem.create(entry.key, entry.name, entry.price, entry.qty + delta));
         if (result[index].qty <= 0) result.splice(index, 1);
+      }
+      return result;
+    }
+
+    addCustomized(cart, key, name, price, detail) {
+      const result = cart.slice();
+      const existing = result.find(c => c.key === key);
+      if (existing) {
+        const updated = this._copyDetails(existing, global.PosApp.CartItem.create(key, existing.name, existing.price, existing.qty + 1));
+        updated.desc = existing.desc || detail;
+        result[result.indexOf(existing)] = updated;
+      } else {
+        const info = this._catalog.findItem(key);
+        const item = this._catalog.getItem(info.cat, info.item);
+        const created = global.PosApp.CartItem.create(key, name, price, 1);
+        created.desc = detail;
+        created.sauce_targets = this._targetsForItem(item, item && item.name);
+        created.alga_targets = this._algaTargetsForItem(item, item && item.name);
+        result.push(created);
       }
       return result;
     }

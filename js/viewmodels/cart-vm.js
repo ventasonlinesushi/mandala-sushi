@@ -43,6 +43,12 @@
       this.changeQty(key, 1);
     }
 
+    addCustomized(key, name, price, detail) {
+      this.cart = this._service.addCustomized(this.cart, key, name, price, detail);
+      this._persist();
+      this._emit();
+    }
+
     remove(key) {
       this.cart = this._service.removeEntry(this.cart, key);
       this._persist();

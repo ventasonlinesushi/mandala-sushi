@@ -31,7 +31,8 @@
     }
 
     findItem(key) {
-      const clean = key.indexOf("pkg:") === 0 ? key.slice(4) : key;
+      const baseKey = String(key || "").split("|")[0];
+      const clean = baseKey.indexOf("pkg:") === 0 ? baseKey.slice(4) : baseKey;
       const parts = clean.split(":");
       const cat = +parts[0];
       const item = +parts[1];
