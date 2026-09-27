@@ -23,6 +23,11 @@
               ? this._packageSauceTargets(e.package_detail.selected || [], e.package_detail.fixed || [])
               : this._targetsForItem(item, item.name);
           }
+          if (item && !Array.isArray(e.alga_targets)) {
+            e.alga_targets = e.package_detail
+              ? this._packageAlgaTargets(e.package_detail.selected || [], e.package_detail.fixed || [])
+              : this._algaTargetsForItem(item, item.name);
+          }
           return !!item && item.available !== false;
         });
       } catch (e) {
@@ -32,6 +37,7 @@
 
     _copyDetails(from, to) {
       if (from.sauce_targets) to.sauce_targets = from.sauce_targets.slice();
+      if (from.alga_targets) to.alga_targets = from.alga_targets.slice();
       if (from.package_detail) to.package_detail = from.package_detail;
       if (from.desc) to.desc = from.desc;
       return to;
@@ -42,12 +48,29 @@
       return this._catalog.isSauceEligible(item) ? [label || item.name] : [];
     }
 
+    _algaTargetsForItem(item, label) {
+      if (Array.isArray(item.algaTargets)) return item.algaTargets.slice();
+      if (Array.isArray(item.sauceTargets)) return item.sauceTargets.filter(name => this._catalog.isRollEligibleName(name));
+      return this._catalog.isRollEligible(item) ? [label || item.name] : [];
+    }
+
     _packageSauceTargets(selected, fixedItems) {
       const targets = (selected || []).filter(name => this._catalog.isSauceEligibleName(name));
       (fixedItems || []).forEach(fixed => {
         const name = typeof fixed === "string" ? fixed : fixed.name;
         const qty = typeof fixed === "object" ? Number(fixed.qty || 1) : 1;
         if (!this._catalog.isSauceEligibleName(name)) return;
+        for (let n = 0; n < qty; n += 1) targets.push(name);
+      });
+      return targets;
+    }
+
+    _packageAlgaTargets(selected, fixedItems) {
+      const targets = (selected || []).filter(name => this._catalog.isRollEligibleName(name));
+      (fixedItems || []).forEach(fixed => {
+        const name = typeof fixed === "string" ? fixed : fixed.name;
+        const qty = typeof fixed === "object" ? Number(fixed.qty || 1) : 1;
+        if (!this._catalog.isRollEligibleName(name)) return;
         for (let n = 0; n < qty; n += 1) targets.push(name);
       });
       return targets;
@@ -71,6 +94,7 @@
           delta
         );
         created.sauce_targets = this._targetsForItem(item, baseName);
+        created.alga_targets = this._algaTargetsForItem(item, baseName);
         result.push(created);
       } else {
         const index = result.indexOf(entry);
@@ -136,6 +160,7 @@
         created.package_detail = { name:item.name, selected:selected.slice(), selected_groups:(item._packageSelections||[]), groups:groups, fixed:(item.package.fixed||[]), options:options };
         created.desc = JSON.stringify(created.package_detail);
         created.sauce_targets = this._packageSauceTargets(selected, item.package.fixed || []);
+        created.alga_targets = this._packageAlgaTargets(selected, item.package.fixed || []);
         result.push(created);
       }
       return result;

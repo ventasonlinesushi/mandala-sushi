@@ -106,6 +106,7 @@
 
     _copyRepeated(from, to) {
       if (from.sauce_targets) to.sauce_targets = from.sauce_targets.slice();
+      if (from.alga_targets) to.alga_targets = from.alga_targets.slice();
       if (from.package_detail) to.package_detail = from.package_detail;
       if (from.desc) to.desc = from.desc;
       return to;

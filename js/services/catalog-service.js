@@ -84,6 +84,23 @@
       return /^Rollos\b/i.test(category) || /\b(?:Yakimeshi|Gohan)\b/i.test(item.name || "");
     }
 
+    isRollEligible(item) {
+      return !!item && /^Rollos\b/i.test(this.categoryOf(item));
+    }
+
+    isRollEligibleName(name) {
+      const clean = String(name || "").replace(/\s*\[[^\]]*\]\s*$/, "").split(" · ")[0].trim();
+      for (let i = 0; i < this._menu.length; i += 1) {
+        const items = this._menu[i].items || [];
+        for (let j = 0; j < items.length; j += 1) {
+          if (String(items[j].name || "").toLowerCase() === clean.toLowerCase()) {
+            return this.isRollEligible(items[j]);
+          }
+        }
+      }
+      return /\b(?:roll|maki|furai|geisha|kiroi pollito|daisuki|nevadito|okinawa)\b/i.test(clean);
+    }
+
     isSauceEligibleName(name) {
       const clean = String(name || "").replace(/\s*\[[^\]]*\]\s*$/, "").split(" · ")[0].trim();
       for (let i = 0; i < this._menu.length; i += 1) {

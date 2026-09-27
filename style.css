@@ -364,6 +364,7 @@ main { padding: 8px 14px 150px; max-width: 660px; margin: 0 auto; }
 .sauce-option{border:1.5px solid #d8cbd0;border-radius:999px;background:#fff;padding:8px 11px;font:inherit;font-size:12px;font-weight:800;color:var(--text);cursor:pointer}
 .sauce-option.active{border-color:var(--primary);background:var(--primary);color:#fff}
 .sauce-empty{font-size:13px;color:var(--muted);padding:8px 0}
+.alga-field{background:#fffdf7;border-color:#eadfbd}
 .btn:disabled { opacity: .45; cursor: not-allowed; }
 
 .empty-cart { text-align: center; color: var(--muted); padding: 40px 0; }

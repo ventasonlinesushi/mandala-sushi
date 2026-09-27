@@ -15,6 +15,7 @@
       this.payment = "Efectivo";
       this.palitos = "Si";
       this.sauceSelections = {};
+      this.algaSelections = {};
       this.sauceOptions = ["Salsa de anguila", "Soya con limón", "Chiles toreados"];
       this.e = {};
     }
@@ -35,6 +36,7 @@
         optTransferencia: document.getElementById("optTransferencia"),
         fNotes: document.getElementById("fNotes"),
         sauceSelector: document.getElementById("sauceSelector"),
+        algaSelector: document.getElementById("algaSelector"),
         optPalitosSi: document.getElementById("optPalitosSi"),
         optPalitosNo: document.getElementById("optPalitosNo"),
         checkoutItems: document.getElementById("checkoutItems"),
@@ -76,6 +78,7 @@
       });
       this.e.checkoutTotal.textContent = this.currency.format(this.cart.total);
       this._renderSauces();
+      this._renderAlga();
     }
 
     _sauceTargets() {
@@ -161,6 +164,69 @@
       return lines.join(" | ");
     }
 
+    _algaTargets() {
+      const targets = [];
+      this.cart.items.forEach(c => {
+        const baseTargets = c.alga_targets || [];
+        for (let unit = 0; unit < c.qty; unit += 1) {
+          baseTargets.forEach((name, index) => targets.push({
+            id: c.key + "|" + unit + "|" + index,
+            label: name + (c.qty > 1 ? " · pedido " + (unit + 1) : "")
+          }));
+        }
+      });
+      const totals = {}, seen = {};
+      targets.forEach(t => { totals[t.label] = (totals[t.label] || 0) + 1; });
+      targets.forEach(t => {
+        seen[t.label] = (seen[t.label] || 0) + 1;
+        t.displayLabel = t.label + (totals[t.label] > 1 ? " · " + seen[t.label] : "");
+      });
+      return targets;
+    }
+
+    _renderAlga() {
+      const host = this.e.algaSelector;
+      if (!host) return;
+      const targets = this._algaTargets();
+      const valid = {};
+      targets.forEach(t => {
+        valid[t.id] = true;
+        if (!this.algaSelections[t.id]) this.algaSelections[t.id] = "Con alga";
+      });
+      Object.keys(this.algaSelections).forEach(id => { if (!valid[id]) delete this.algaSelections[id]; });
+      host.innerHTML = "";
+      if (!targets.length) {
+        host.innerHTML = '<div class="sauce-empty">Este pedido no contiene sushi.</div>';
+        return;
+      }
+      targets.forEach(target => {
+        const card = document.createElement("div");
+        card.className = "sauce-card";
+        const title = document.createElement("b");
+        title.textContent = target.displayLabel;
+        card.appendChild(title);
+        const options = document.createElement("div");
+        options.className = "sauce-options";
+        ["Con alga", "Sin alga"].forEach(name => {
+          const button = document.createElement("button");
+          button.type = "button";
+          button.className = "sauce-option";
+          button.classList.toggle("active", this.algaSelections[target.id] === name);
+          button.textContent = name;
+          button.onclick = () => { this.algaSelections[target.id] = name; this._renderAlga(); };
+          options.appendChild(button);
+        });
+        card.appendChild(options);
+        host.appendChild(card);
+      });
+    }
+
+    _algaSummary() {
+      return this._algaTargets().map(target =>
+        target.displayLabel + ": " + (this.algaSelections[target.id] || "Con alga")
+      ).join(" | ");
+    }
+
     _form() {
       const name = this.e.fName.value.trim();
       const phone = this.e.fPhone.value.trim();
@@ -170,6 +236,7 @@
       const espec = this.e.fEspec.value.trim();
       const notes = this.e.fNotes.value.trim();
       const salsas = this._sauceSummary();
+      const alga = this._algaSummary();
 
       if (!name) { alert("Escribe tu nombre."); return null; }
       if (!phone) { alert("Escribe tu teléfono."); return null; }
@@ -185,7 +252,7 @@
         if (espec) address += " (" + espec + ")";
       }
 
-      return { name, phone, address, notes, salsas, orderType: this.orderType, payment: this.payment, palitos: this.palitos };
+      return { name, phone, address, notes, salsas, alga, orderType: this.orderType, payment: this.payment, palitos: this.palitos };
     }
 
     send() {
