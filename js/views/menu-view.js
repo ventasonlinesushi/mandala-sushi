@@ -55,6 +55,7 @@
   renderChips() {
     const nav = this.nav;
     nav.innerHTML = "";
+    if (this.activeCat === FEATURED && this._hasMondayPromo()) this.activeCat = "Paquetes y Promos";
     const cats = [FEATURED].concat(this.catalog.categories);
     cats.forEach(c => {
       const b = document.createElement("button");
@@ -103,12 +104,18 @@
         const list = document.createElement("div");
         list.className = "items";
         const cat = this.catalog.category(ci);
-        cat.items.forEach((item, ii) => {
-          list.appendChild(this._itemCard(ci, ii, item));
-        });
+        cat.items.map((item, ii) => ({ item, ii }))
+          .sort((a, b) => Number(!!b.item.mondayPromo) - Number(!!a.item.mondayPromo))
+          .forEach(entry => list.appendChild(this._itemCard(ci, entry.ii, entry.item)));
         main.appendChild(list);
       });
       this._refreshLoyalty();
+    }
+
+    _hasMondayPromo() {
+      return this.catalog.categories.some((name, ci) =>
+        (this.catalog.category(ci).items || []).some(item => item.mondayPromo)
+      );
     }
 
     /* ---------- Búsqueda ---------- */

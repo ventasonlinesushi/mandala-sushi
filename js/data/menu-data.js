@@ -14,6 +14,11 @@
     "Kiroi Pollito", "Daisuki", "Nevadito", "Okinawa"
   ];
 
+  const IS_MONDAY = new Intl.DateTimeFormat("en-US", {
+    timeZone: "America/Merida",
+    weekday: "short"
+  }).format(new Date()) === "Mon";
+
   const MENU = [
     {
       name: "Entradas",
@@ -209,7 +214,8 @@
         { name: "Paquete Familiar", desc: "4 rollos a elegir (puedes repetir el mismo) + 2 yakimeshi de pollo + 3 dedos philadelphia + 1 orden de panchitos jalapeños con philadelphia.", price: 499, package: { count: 4, rolls: ROLLS179, fixed: [{ name: "Yakimeshi de Pollo", qty: 2 }] } },
         { name: "Paquete 4", desc: "2 Furai de Surimi (empanizados) + 2 California (fríos).", price: 279, sauceTargets: ["Furai de Surimi", "Furai de Surimi", "California Roll", "California Roll"] },
         { name: "Paquete Godín", desc: "1 Furai de Surimi + 1 dedo gouda + 1 té Nestea.", price: 109, sauceTargets: ["Furai de Surimi"] },
-        { name: "Mandala Box", desc: "3 rollos fijos: California, Kiroi Pollito y Furai de Arrachera. Incluye 1 orden de papas a la francesa, 4 tiras de pollo, 4 onigiris empanizados de philadelphia y 1 rollito primavera.", price: 399, sauceTargets: ["California Roll", "Kiroi Pollito", "Furai de Arrachera"] }
+        { name: "Mandala Box", desc: "3 rollos fijos: California, Kiroi Pollito y Furai de Arrachera. Incluye 1 orden de papas a la francesa, 4 tiras de pollo, 4 onigiris empanizados de philadelphia y 1 rollito primavera.", price: 399, sauceTargets: ["California Roll", "Kiroi Pollito", "Furai de Arrachera"] },
+        ...(IS_MONDAY ? [{ name: "Promoción del Lunes · 1 Rollo $79", desc: "Elige 1: California Roll, Furai de Surimi, Philadelphia Roll o Kiroi Pollito. Solo disponible los lunes.", price: 79, mondayPromo: true, package: { count: 1, repeat: false, rolls: ["California Roll", "Furai de Surimi", "Philadelphia Roll", "Kiroi Pollito"] } }] : [])
       ]
     },
     {
