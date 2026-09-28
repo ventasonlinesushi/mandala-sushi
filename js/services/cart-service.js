@@ -19,6 +19,7 @@
           const clean = baseKey.indexOf("pkg:") === 0 ? baseKey.slice(4) : baseKey;
           const parts = clean.split(":");
           const item = this._catalog.getItem(+parts[0], +parts[1]);
+          if (item && e.package_detail && e.package_detail.name && e.package_detail.name !== item.name) return false;
           if (item && !Array.isArray(e.sauce_targets)) {
             e.sauce_targets = e.package_detail
               ? this._packageSauceTargets(e.package_detail.selected || [], e.package_detail.fixed || [])
@@ -162,8 +163,15 @@
       const ii = pkgInfo.ii;
       const item = pkgInfo.item;
       const groups = item.package.groups || [];
-      const required = groups.length ? groups.reduce((n,g) => n + (g.choose||1), 0) : this.pkgCountOf(item);
-      if (selected.length !== required) return cart;
+      const selections = item._packageSelections || [];
+      const valid = groups.length
+        ? groups.every((g,i) => {
+            const count = ((selections[i] && selections[i].selected) || []).length;
+            const min = g.min == null ? (g.choose || 1) : Number(g.min);
+            return count >= min && count <= (g.choose || 1);
+          })
+        : selected.length === this.pkgCountOf(item);
+      if (!valid) return cart;
 
       const sorted = selected.slice().sort();
       const groupKey = (item._packageSelections||[]).map(g => g.name+"="+(g.selected||[]).slice().sort().join("+")).join("|");
@@ -175,7 +183,11 @@
         const updated = this._copyDetails(entry, global.PosApp.CartItem.create(entry.key, entry.name, entry.price, entry.qty + 1));
         result[result.indexOf(entry)] = updated;
       } else {
-        const created = global.PosApp.CartItem.create(key, item.name + (sorted.length ? " · " + sorted.join(" + ") : ""), item.price, 1);
+        const extra = groups.reduce((sum, group, gi) => sum + (((selections[gi] && selections[gi].selected) || []).reduce((subtotal, name) => {
+          const option = (group.options || []).find(o => (typeof o === "string" ? o : o.name) === name);
+          return subtotal + (typeof option === "object" ? Number(option.extra || 0) : 0);
+        }, 0)), 0);
+        const created = global.PosApp.CartItem.create(key, item.name + (sorted.length ? " · " + sorted.join(" + ") : ""), item.price + extra, 1);
         const options = groups.length ? groups.reduce((all,g) => all.concat(g.options||[]), []) : (item.package.options||item.package.rolls||[]);
         created.package_detail = { name:item.name, selected:selected.slice(), selected_groups:(item._packageSelections||[]), groups:groups, fixed:(item.package.fixed||[]), options:options };
         created.desc = JSON.stringify(created.package_detail);

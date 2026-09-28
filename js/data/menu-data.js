@@ -7,7 +7,7 @@
 (function (global) {
   "use strict";
 
-  const ROLLS169 = [
+  const ROLLS179 = [
     "Banana Roll", "Geisha", "California Roll", "Philadelphia Roll",
     "Chipotle Roll", "Nori Maki", "Yasai Tempura", "Furai de Arrachera",
     "Furai de Surimi", "Furai de Pollo", "Yoko Roll", "Fresita Maki",
@@ -202,10 +202,11 @@
     {
       name: "Paquetes y Promos",
       items: [
-        { name: "2 Rollos x $169", desc: "Elige 2 rollos de la lista. Puedes repetir el mismo.", price: 169, package: { count: 2, rolls: ROLLS169 } },
-        { name: "Paquete Individual", desc: "1 rollo a elegir + 1 orden de papas a la francesa + 1 té.", price: 129, package: { count: 1, rolls: ROLLS169 } },
-        { name: "Paquete Pareja", desc: "2 rollos a elegir (puedes repetir el mismo) + 2 yakimeshi de pollo o vegetariano + 2 pzas. de dedos gouda.", price: 289, package: { count: 2, rolls: ROLLS169, fixed: [{ name: "Yakimeshi de Pollo o Vegetariano", qty: 2 }] } },
-        { name: "Paquete Familiar", desc: "4 rollos a elegir (puedes repetir el mismo) + 2 yakimeshi de pollo + 3 dedos philadelphia + 1 orden de panchitos jalapeños con philadelphia.", price: 499, package: { count: 4, rolls: ROLLS169, fixed: [{ name: "Yakimeshi de Pollo", qty: 2 }] } },
+        { name: "2 Rollos x $179", desc: "Elige 2 rollos de la lista. Puedes repetir el mismo.", price: 179, package: { count: 2, rolls: ROLLS179 } },
+        { name: "Lunch Mandala", desc: "1/2 yakimeshi vegetariano + 1 rollo seleccionado + 1 dedo de queso gouda + 1 Nestea de 500 ml.", price: 149, package: { count: 1, rolls: ROLLS179, fixed: [{ name: "1/2 Yakimeshi Vegetariano", qty: 1 }, { name: "Dedo de Queso Gouda", qty: 1 }, { name: "Nestea 500 ml", qty: 1 }] } },
+        { name: "Paquete 1", desc: "1 rollo a elegir + 1/2 yakimeshi vegetariano con proteínas opcionales (+$35 cada una) + 1 pay a elegir.", price: 179, package: { count: 2, repeat: false, fixed: [{ name: "1/2 Yakimeshi Vegetariano", qty: 1 }], groups: [{ name: "Elige 1 rollo", choose: 1, repeat: false, options: ROLLS179 }, { name: "Proteínas para el 1/2 yakimeshi", min: 0, choose: 3, repeat: false, options: [{ name: "Pollo", extra: 35 }, { name: "Arrachera", extra: 35 }, { name: "Camarón", extra: 35 }] }, { name: "Elige 1 postre", choose: 1, repeat: false, options: ["Pay de Limón", "Pay de Oreo", "Pay de Mango", "Pay de Frutos Rojos"] }] } },
+        { name: "Paquete Pareja", desc: "2 rollos a elegir (puedes repetir el mismo) + 2 yakimeshi de pollo o vegetariano + 2 pzas. de dedos gouda.", price: 289, package: { count: 2, rolls: ROLLS179, fixed: [{ name: "Yakimeshi de Pollo o Vegetariano", qty: 2 }] } },
+        { name: "Paquete Familiar", desc: "4 rollos a elegir (puedes repetir el mismo) + 2 yakimeshi de pollo + 3 dedos philadelphia + 1 orden de panchitos jalapeños con philadelphia.", price: 499, package: { count: 4, rolls: ROLLS179, fixed: [{ name: "Yakimeshi de Pollo", qty: 2 }] } },
         { name: "Paquete 4", desc: "2 Furai de Surimi (empanizados) + 2 California (fríos).", price: 279, sauceTargets: ["Furai de Surimi", "Furai de Surimi", "California Roll", "California Roll"] },
         { name: "Paquete Godín", desc: "1 Furai de Surimi + 1 dedo gouda + 1 té Nestea.", price: 109, sauceTargets: ["Furai de Surimi"] },
         { name: "Mandala Box", desc: "3 rollos fijos: California, Kiroi Pollito y Furai de Arrachera. Incluye 1 orden de papas a la francesa, 4 tiras de pollo, 4 onigiris empanizados de philadelphia y 1 rollito primavera.", price: 399, sauceTargets: ["California Roll", "Kiroi Pollito", "Furai de Arrachera"] }

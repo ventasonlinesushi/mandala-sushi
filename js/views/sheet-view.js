@@ -81,12 +81,15 @@
       this.e.pkgDesc.textContent = "Completa cada grupo del paquete:";
       this.e.pkgOptions.innerHTML = "";
       this.pkgGroups.forEach((group, gi) => {
+        const min = group.min == null ? (group.choose || 1) : Number(group.min);
+        const max = group.choose || 1;
         const heading = document.createElement("div");
         heading.className = "pkg-group-title";
-        heading.textContent = (group.name || ("Grupo " + (gi + 1))) + " — escoge " + (group.choose || 1) + (group.repeat !== false ? " (puedes repetir)" : "");
+        heading.textContent = (group.name || ("Grupo " + (gi + 1))) + " — " + (min === 0 ? "elige hasta " + max + " (opcional)" : "escoge " + max) + (group.repeat !== false ? " (puedes repetir)" : "");
         this.e.pkgOptions.appendChild(heading);
         (group.options || []).forEach(option => {
         const roll = typeof option === "string" ? option : option.name;
+        const extra = typeof option === "object" ? Number(option.extra || 0) : 0;
         const opt = document.createElement("div");
         opt.className = "pkg-opt";
         opt.dataset.roll = roll;
@@ -99,7 +102,7 @@
         label.textContent = roll;
         const leg = document.createElement("span");
         leg.className = "pkg-legend";
-        leg.textContent = "$" + item.price;
+        leg.textContent = extra > 0 ? "+" + this.currency.format(extra) : "Incluido";
         opt.appendChild(check); opt.appendChild(label); opt.appendChild(leg);
         opt.onclick = () => {
           const selected = this.pkgGroupSelected[gi], n = group.choose || 1;
@@ -122,7 +125,7 @@
     }
 
     confirmPackage() {
-      if (!this.pendingPkg || !this.pkgGroups.every((g,i) => this.pkgGroupSelected[i].length === (g.choose||1))) return;
+      if (!this.pendingPkg || !this._groupsComplete()) return;
       const { ci, ii, item } = this.pendingPkg;
       item._packageSelections = this.pkgGroups.map((g,i) => ({name:g.name,selected:this.pkgGroupSelected[i].slice()}));
       const selected = this.pkgGroupSelected.reduce((all,x) => all.concat(x), []);
@@ -145,15 +148,33 @@
         lbl.textContent = count > 1 ? roll + " ×" + count : roll;
         opt.classList.toggle("active", count > 0);
       });
-      const summaries = this.pkgGroups.map((g,i) => (g.name||("Grupo "+(i+1)))+": "+this.pkgGroupSelected[i].length+"/"+(g.choose||1));
+      const summaries = this.pkgGroups.map((g,i) => (g.name||("Grupo "+(i+1)))+": "+this.pkgGroupSelected[i].length+"/"+(g.choose||1)+(Number(g.min)===0?" opcional":""));
       this.e.pkgCount.textContent = summaries.join(" · ");
       const btn = this.e.pkgAdd;
-      const complete = this.pkgGroups.every((g,i) => this.pkgGroupSelected[i].length === (g.choose||1));
+      const complete = this._groupsComplete();
       btn.disabled = !complete;
       const item = this.pendingPkg ? this.pendingPkg.item : null;
+      const total = item ? item.price + this._selectedExtras() : 0;
       btn.textContent = complete
-        ? "Agregar " + this.currency.format(item.price)
+        ? "Agregar " + this.currency.format(total)
         : "Completa todos los grupos";
+    }
+
+    _groupsComplete() {
+      return this.pkgGroups.every((g,i) => {
+        const count = this.pkgGroupSelected[i].length;
+        const min = g.min == null ? (g.choose || 1) : Number(g.min);
+        return count >= min && count <= (g.choose || 1);
+      });
+    }
+
+    _selectedExtras() {
+      return this.pkgGroups.reduce((sum, group, gi) => {
+        return sum + this.pkgGroupSelected[gi].reduce((subtotal, name) => {
+          const option = (group.options || []).find(o => (typeof o === "string" ? o : o.name) === name);
+          return subtotal + (typeof option === "object" ? Number(option.extra || 0) : 0);
+        }, 0);
+      }, 0);
     }
 
     _show(el) {
