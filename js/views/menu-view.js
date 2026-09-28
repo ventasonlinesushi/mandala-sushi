@@ -373,7 +373,7 @@
       } else {
         const b = document.createElement("button");
         b.className = "add-btn variant";
-        b.textContent = "Elegir " + this.pkg.countOf(item);
+        b.textContent = item.packageButtonText || ("Elegir " + this.pkg.countOf(item));
         b.onclick = () => this.hooks.onPkg && this.hooks.onPkg(ci, ii, item);
         area.appendChild(b);
       }
