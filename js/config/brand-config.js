@@ -14,10 +14,17 @@
     phoneDisplay: "999 316 8027",
     banner: "Pide por WhatsApp",
     storagePrefix: "mandala",
-    /* Horario de atención (formato 24 h). Para "atención continua" usa "" */
+    /* Horario semanal de atención (formato 24 h). */
     hours: {
-      open: "12:00",
-      close: "21:30"
+      weekly: {
+        sun: { open: "14:00", close: "23:00" },
+        mon: { open: "14:30", close: "23:00" },
+        tue: { closed: true },
+        wed: { open: "14:30", close: "23:00" },
+        thu: { open: "14:30", close: "23:00" },
+        fri: { open: "14:30", close: "23:00" },
+        sat: { open: "14:00", close: "23:00" }
+      }
     },
     timezone: "America/Merida",
     /* Opcional: URL de un Apps Script de Google Sheets para recibir
