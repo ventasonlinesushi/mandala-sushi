@@ -55,7 +55,7 @@
   renderChips() {
     const nav = this.nav;
     nav.innerHTML = "";
-    if (this.activeCat === FEATURED && this._hasMondayPromo()) this.activeCat = "Paquetes y Promos";
+    if (this.activeCat === FEATURED && this._hasDayPromo()) this.activeCat = "Paquetes y Promos";
     const cats = [FEATURED].concat(this.catalog.categories);
     cats.forEach(c => {
       const b = document.createElement("button");
@@ -105,16 +105,16 @@
         list.className = "items";
         const cat = this.catalog.category(ci);
         cat.items.map((item, ii) => ({ item, ii }))
-          .sort((a, b) => Number(!!b.item.mondayPromo) - Number(!!a.item.mondayPromo))
+          .sort((a, b) => Number(!!b.item.dayPromo) - Number(!!a.item.dayPromo))
           .forEach(entry => list.appendChild(this._itemCard(ci, entry.ii, entry.item)));
         main.appendChild(list);
       });
       this._refreshLoyalty();
     }
 
-    _hasMondayPromo() {
+    _hasDayPromo() {
       return this.catalog.categories.some((name, ci) =>
-        (this.catalog.category(ci).items || []).some(item => item.mondayPromo)
+        (this.catalog.category(ci).items || []).some(item => item.dayPromo)
       );
     }
 

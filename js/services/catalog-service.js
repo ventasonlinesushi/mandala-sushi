@@ -60,6 +60,7 @@
     }
 
     priceLabel(item) {
+      if (item.priceText) return item.priceText;
       if (typeof item.price === "number") {
         return this._currency.format(item.price);
       }

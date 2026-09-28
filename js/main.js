@@ -137,6 +137,17 @@
             package: pkg ? { count:pkg.choose||0, rolls:pkg.options||[], options:pkg.options||[], fixed:pkg.fixed||[], repeat:pkg.repeat!==false, groups:pkg.groups||[] } : undefined
           });
         });
+        ST.forEach(function(staticCategory) {
+          (staticCategory.items || []).filter(function(item){ return item.dayPromo; }).forEach(function(item) {
+            if (!catMap[staticCategory.name]) {
+              catMap[staticCategory.name] = { name: staticCategory.name, items: [] };
+              cats.push(catMap[staticCategory.name]);
+            }
+            if (!catMap[staticCategory.name].items.some(function(existing){ return existing.name === item.name; })) {
+              catMap[staticCategory.name].items.push(item);
+            }
+          });
+        });
         initApp(cats);
       })
       .catch(function () { initApp(ST); });

@@ -187,7 +187,18 @@
           const option = (group.options || []).find(o => (typeof o === "string" ? o : o.name) === name);
           return subtotal + (typeof option === "object" ? Number(option.extra || 0) : 0);
         }, 0)), 0);
-        const created = global.PosApp.CartItem.create(key, item.name + (sorted.length ? " · " + sorted.join(" + ") : ""), item.price + extra, 1);
+        let packagePrice = item.price + extra;
+        if (item.package.pricing === "three_for_two") {
+          const prices = [];
+          groups.forEach((group, gi) => {
+            ((selections[gi] && selections[gi].selected) || []).forEach(name => {
+              const option = (group.options || []).find(o => (typeof o === "string" ? o : o.name) === name);
+              prices.push(typeof option === "object" ? Number(option.price || 0) : 0);
+            });
+          });
+          packagePrice = prices.sort((a, b) => b - a).slice(0, 2).reduce((sum, price) => sum + price, 0);
+        }
+        const created = global.PosApp.CartItem.create(key, item.name + (sorted.length ? " · " + sorted.join(" + ") : ""), packagePrice, 1);
         const options = groups.length ? groups.reduce((all,g) => all.concat(g.options||[]), []) : (item.package.options||item.package.rolls||[]);
         created.package_detail = { name:item.name, selected:selected.slice(), selected_groups:(item._packageSelections||[]), groups:groups, fixed:(item.package.fixed||[]), options:options };
         created.desc = JSON.stringify(created.package_detail);

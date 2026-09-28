@@ -14,10 +14,12 @@
     "Kiroi Pollito", "Daisuki", "Nevadito", "Okinawa"
   ];
 
-  const IS_MONDAY = new Intl.DateTimeFormat("en-US", {
+  const CURRENT_DAY = new Intl.DateTimeFormat("en-US", {
     timeZone: "America/Merida",
     weekday: "short"
-  }).format(new Date()) === "Mon";
+  }).format(new Date());
+  const IS_MONDAY = CURRENT_DAY === "Mon";
+  const IS_3X2_DAY = CURRENT_DAY === "Wed" || CURRENT_DAY === "Thu";
 
   const MENU = [
     {
@@ -215,7 +217,7 @@
         { name: "Paquete 4", desc: "2 Furai de Surimi (empanizados) + 2 California (fríos).", price: 279, sauceTargets: ["Furai de Surimi", "Furai de Surimi", "California Roll", "California Roll"] },
         { name: "Paquete Godín", desc: "1 Furai de Surimi + 1 dedo gouda + 1 té Nestea.", price: 109, sauceTargets: ["Furai de Surimi"] },
         { name: "Mandala Box", desc: "3 rollos fijos: California, Kiroi Pollito y Furai de Arrachera. Incluye 1 orden de papas a la francesa, 4 tiras de pollo, 4 onigiris empanizados de philadelphia y 1 rollito primavera.", price: 399, sauceTargets: ["California Roll", "Kiroi Pollito", "Furai de Arrachera"] },
-        ...(IS_MONDAY ? [{ name: "Promoción del Lunes · 1 Rollo $79", desc: "Elige 1: California Roll, Furai de Surimi, Philadelphia Roll o Kiroi Pollito. Solo disponible los lunes.", price: 79, mondayPromo: true, package: { count: 1, repeat: false, rolls: ["California Roll", "Furai de Surimi", "Philadelphia Roll", "Kiroi Pollito"] } }] : [])
+        ...(IS_MONDAY ? [{ name: "Promoción del Lunes · 1 Rollo $79", desc: "Elige 1: California Roll, Furai de Surimi, Philadelphia Roll o Kiroi Pollito. Solo disponible los lunes.", price: 79, dayPromo: true, package: { count: 1, repeat: false, rolls: ["California Roll", "Furai de Surimi", "Philadelphia Roll", "Kiroi Pollito"] } }] : [])
       ]
     },
     {
@@ -242,6 +244,30 @@
       ]
     }
   ];
+
+  if (IS_3X2_DAY) {
+    const allRolls = [];
+    MENU.forEach(category => {
+      if (!/^Rollos\b/i.test(category.name || "")) return;
+      (category.items || []).forEach(item => {
+        if (typeof item.price === "number") allRolls.push({ name: item.name, price: item.price });
+      });
+    });
+    const promos = MENU.find(category => category.name === "Paquetes y Promos");
+    promos.items.push({
+      name: "Miércoles y Jueves · 3x2 en Sushi",
+      desc: "Elige 3 rollos de todo el menú. Se cobran los 2 de mayor precio y el rollo de menor o igual precio es gratis. Puedes repetir.",
+      price: 0,
+      priceText: "Pagas los 2 de mayor precio",
+      dayPromo: true,
+      package: {
+        count: 3,
+        repeat: true,
+        pricing: "three_for_two",
+        groups: [{ name: "Elige 3 rollos", choose: 3, repeat: true, options: allRolls }]
+      }
+    });
+  }
 
   global.PosApp = global.PosApp || {};
   global.PosApp.menuData = MENU;

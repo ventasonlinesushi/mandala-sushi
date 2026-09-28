@@ -90,6 +90,7 @@
         (group.options || []).forEach(option => {
         const roll = typeof option === "string" ? option : option.name;
         const extra = typeof option === "object" ? Number(option.extra || 0) : 0;
+        const optionPrice = typeof option === "object" && typeof option.price === "number" ? Number(option.price) : null;
         const opt = document.createElement("div");
         opt.className = "pkg-opt";
         opt.dataset.roll = roll;
@@ -102,7 +103,7 @@
         label.textContent = roll;
         const leg = document.createElement("span");
         leg.className = "pkg-legend";
-        leg.textContent = extra > 0 ? "+" + this.currency.format(extra) : "Incluido";
+        leg.textContent = optionPrice != null ? this.currency.format(optionPrice) : (extra > 0 ? "+" + this.currency.format(extra) : "Incluido");
         opt.appendChild(check); opt.appendChild(label); opt.appendChild(leg);
         opt.onclick = () => {
           const selected = this.pkgGroupSelected[gi], n = group.choose || 1;
@@ -154,7 +155,7 @@
       const complete = this._groupsComplete();
       btn.disabled = !complete;
       const item = this.pendingPkg ? this.pendingPkg.item : null;
-      const total = item ? item.price + this._selectedExtras() : 0;
+      const total = item ? this._packageTotal(item) : 0;
       btn.textContent = complete
         ? "Agregar " + this.currency.format(total)
         : "Completa todos los grupos";
@@ -175,6 +176,20 @@
           return subtotal + (typeof option === "object" ? Number(option.extra || 0) : 0);
         }, 0);
       }, 0);
+    }
+
+    _packageTotal(item) {
+      if (item.package && item.package.pricing === "three_for_two") {
+        const prices = [];
+        this.pkgGroups.forEach((group, gi) => {
+          this.pkgGroupSelected[gi].forEach(name => {
+            const option = (group.options || []).find(o => (typeof o === "string" ? o : o.name) === name);
+            prices.push(typeof option === "object" ? Number(option.price || 0) : 0);
+          });
+        });
+        return prices.sort((a, b) => b - a).slice(0, 2).reduce((sum, price) => sum + price, 0);
+      }
+      return item.price + this._selectedExtras();
     }
 
     _show(el) {
