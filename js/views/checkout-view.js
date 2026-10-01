@@ -157,11 +157,16 @@
 
     _sauceSummary() {
       const lines = [];
+      const totals = {};
+      this.sauceOptions.forEach(name => { totals[name] = 0; });
       this._sauceTargets().forEach(target => {
         const selected = this.sauceSelections[target.id] || [];
+        selected.forEach(name => { totals[name] = (totals[name] || 0) + 1; });
         lines.push(target.displayLabel + ": " + (selected.length ? selected.join(" + ") : "Sin salsas"));
       });
-      return lines.join(" | ");
+      if (!lines.length) return "";
+      const totalLine = this.sauceOptions.map(name => name + ": " + totals[name]).join(" | ");
+      return lines.join(" | ") + " || TOTAL DE SALSAS: " + totalLine;
     }
 
     _algaTargets() {
